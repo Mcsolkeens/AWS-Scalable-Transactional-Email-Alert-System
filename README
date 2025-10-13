@@ -6,11 +6,11 @@ This project demonstrates a **serverless architecture** that decouples email not
 
 ---
 
-## 🚀 Project Overview
+## Project Overview
 
 A core banking system triggers transactional email alerts (e.g. deposits, withdrawals). Instead of directly using SMTP(or any email gatewa y) (which risks failure when local logs/storage overflow), we offload email processing using AWS-native services.
 
-### 📦 Tech Stack
+### Tech Stack
 
 * **Amazon SQS** – Queue for email payloads
 * **AWS Lambda** – Processes messages from SQS and sends emails
