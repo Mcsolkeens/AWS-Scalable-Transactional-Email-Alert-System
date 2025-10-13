@@ -38,7 +38,7 @@ A core banking system triggers transactional email alerts (e.g. deposits, withdr
 
 ### 3. **Configure SES**
 
-> ⚠️ SES requires domain/email **verification** to prevent spam and spoofing.
+> SES requires domain/email **verification** to prevent spam and spoofing.
 
 * Use a **personal email** (e.g. Gmail, Yahoo) or a **registered domain**
 * In **sandbox mode**, SES can only send to verified recipients
@@ -46,7 +46,7 @@ A core banking system triggers transactional email alerts (e.g. deposits, withdr
 
 ### 4. **Send Message via Core App**
 
-A Python script (`core_app_sqs_sender.py`)- (see repo for details of python script) sends a message like:
+A Python script (`core_app_sqs.py`)- (see repo for details of python script) sends a message like:
 
 ```
 
