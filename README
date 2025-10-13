@@ -1,4 +1,4 @@
-AWS Scalable -Transactional-EmailAlert System
+<h1>AWS Scalable -Transactional-EmailAlert System</h1>
 
 # 💬 AWS Transactional Email Alert System
 
@@ -48,7 +48,7 @@ A core banking system triggers transactional email alerts (e.g. deposits, withdr
 
 A Python script (`core_app_sqs.py`)- (see repo for details of python script) sends a message like:
 
-```
+
 ### DETAILED STEP BY STEP IMPLEMENTATION
 
  We’ll:
@@ -68,13 +68,13 @@ You'll learn how to:
 
 ---
 
-## 🎯 Project Goal
+## Project Goal
 
 When a user makes a transaction (like a deposit or withdrawal), the app sends the details to **SQS**, a **Lambda** picks it up, formats a message, and sends an email using **SES**.
 
 ---
 
-## 🧰 TOOLS USED
+## TOOLS USED
 
 * AWS Services: **SQS**, **Lambda**, **SES**
 * Language: **Python 3.8+**
@@ -83,7 +83,7 @@ When a user makes a transaction (like a deposit or withdrawal), the app sends th
 
 ---
 
-## 🗂️ STEP 1: PROJECT STRUCTURE
+## STEP 1: PROJECT STRUCTURE
 
 Create a folder structure:
 
@@ -96,11 +96,11 @@ emailalert/
 
 ---
 
-## 🔑 STEP 2: AWS SETUP (MANUAL VIA CONSOLE)
+## STEP 2: AWS SETUP (MANUAL VIA CONSOLE)
 
 Let’s create all the necessary AWS resources.
 
-### ✅ A. Create an SQS Queue
+###  A. Create an SQS Queue
 
 1. Go to AWS Console > **SQS**
 2. Click **“Create queue”**
@@ -109,7 +109,7 @@ Let’s create all the necessary AWS resources.
 5. Keep defaults; click **Create Queue**
 ---
 
-### ✅ B. Create and Verify an SES Email Address
+### B. Create and Verify an SES Email Address
 
 1. Go to AWS Console > **SES**
 2. Click **Verified Identities**
@@ -117,7 +117,7 @@ Let’s create all the necessary AWS resources.
 4. Choose **Email Address**, enter: `your-email@example.com`
 5. Check your inbox and verify it by clicking the link---
 
-### ✅ C. Create a Lambda Function
+### C. Create a Lambda Function
 
 1. Go to AWS Console > **Lambda**
 
@@ -145,7 +145,7 @@ This tells AWS to invoke the Lambda when a message is sent to SQS.
 
 ---
 
-### ✅ E. Add Permissions (IAM Role)
+###  E. Add Permissions (IAM Role)
 
 Lambda needs permissions to:
 
@@ -186,7 +186,7 @@ Lambda needs permissions to:
 
 Paste this code refer to "lamda_to_ses.py" in repo into your Lambda in the AWS Console.
 
-🧠 This function:
+ This function:
 
 * Parses the SQS message
 * Formats the email
@@ -194,7 +194,7 @@ Paste this code refer to "lamda_to_ses.py" in repo into your Lambda in the AWS C
 
 ---
 
-## 🧑‍💻 STEP 4: CLIENT SCRIPT TO SEND MESSAGE TO SQS
+##  STEP 4: CLIENT SCRIPT TO SEND MESSAGE TO SQS
 
 Run this code/script on VScode or any terminal "core_app_sqs.py" see files in repo 
 This will send a json file with payload to the queue for lamda to consume
@@ -216,51 +216,6 @@ Check your inbox (use your SES-verified recipient email). The email should say:
 Your account has been credited with $150.00.
 ```
 
-🎉 **SUCCESS!**
-
----
-
-## 🧪 TRY MORE TESTS
-
-Try other values:
-
-* Change `"credit"` to `"debit"`
-* Use different amounts
-* Test invalid values (like missing fields) to see error handling in logs
-
----
-
-## ✅ OUTPUTS & DATA FLOW SUMMARY
-
-### Input:
-
-From `send_transaction.py`
-
-```json
-{
-  "email": "customer@example.com",
-  "type": "credit",
-  "amount": 150.0
-}
-```
-
-### Flow:
-
-```
-[Local Python Script] 
-      ↓
-[SQS Queue] ← message sent
-      ↓
-[AWS Lambda] ← auto-triggered
-      ↓
-Formats message + sends email using SES
-      ↓
-[Customer Email Inbox]
-```
-
-### Expected Output:
-
-Email with:
 
 ```
 Subject: Transaction Alert
@@ -269,14 +224,6 @@ Body: Your account has been credited with $150.00.
 
 ---
 
-## 🧹 OPTIONAL CLEAN-UP (TO AVOID CHARGES)
 
-* Delete the Lambda function
-* Delete the SQS queue
-* Remove verified SES identity
-
----
-
-Would you like me to help you automate this using **Terraform** or **AWS SAM**? Or add error handling, DLQ, or retry logic?
 
 
