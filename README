@@ -49,9 +49,9 @@ A core banking system triggers transactional email alerts (e.g. deposits, withdr
 A Python script (`core_app_sqs.py`)- (see repo for details of python script) sends a message like:
 
 ```
-DETAILED STEP BY STEP IMPLEMENTATION
+### DETAILED STEP BY STEP IMPLEMENTATION
 
-Great! Let's walk through this **step-by-step** like you're a learner building this project from scratch. We’ll:
+ We’ll:
 
 1. **Set up AWS resources**
 2. **Write Python client code to send transactions**
@@ -88,10 +88,10 @@ When a user makes a transaction (like a deposit or withdrawal), the app sends th
 Create a folder structure:
 
 ```
-transaction-notifier/
+emailalert/
 │
-├── send_transaction.py     # Client app (runs locally)
-├── lambda_function.py      # Lambda handler (runs on AWS)
+├── core_app_sqs.py     # Client app (runs locally)
+├── lambda_to_ses.py      # Lambda handler (runs on AWS)
 ```
 
 ---
@@ -100,8 +100,6 @@ transaction-notifier/
 
 Let’s create all the necessary AWS resources.
 
----
-
 ### ✅ A. Create an SQS Queue
 
 1. Go to AWS Console > **SQS**
@@ -109,9 +107,6 @@ Let’s create all the necessary AWS resources.
 3. Choose **Standard Queue**
 4. Name it: `transaction-events-queue`
 5. Keep defaults; click **Create Queue**
-
-⏱️ **Done in ~1 min**
-
 ---
 
 ### ✅ B. Create and Verify an SES Email Address
@@ -120,13 +115,7 @@ Let’s create all the necessary AWS resources.
 2. Click **Verified Identities**
 3. Click **“Create Identity”**
 4. Choose **Email Address**, enter: `your-email@example.com`
-5. Check your inbox and verify it by clicking the link
-
-⚠️ If you're in the SES **sandbox**, you'll also need to verify the recipient email.
-
-⏱️ **Done in ~2–5 mins**
-
----
+5. Check your inbox and verify it by clicking the link---
 
 ### ✅ C. Create a Lambda Function
 
@@ -134,7 +123,7 @@ Let’s create all the necessary AWS resources.
 
 2. Click **“Create Function”**
 
-3. Name it: `ProcessTransactionFunction`
+3. Name it: `give appropriate name`
 
 4. Runtime: **Python 3.8** or higher
 
@@ -142,14 +131,10 @@ Let’s create all the necessary AWS resources.
 
 6. In the Lambda function:
 
-   * Under "Code", replace `lambda_function.py` with code from the next step (we'll get to that).
+   * Under "Code", replace `lambda_to_ses.py` with code from the next step (we'll get to that).
    * Click **Deploy**.
 
-⏱️ **Done in ~3–5 mins**
-
----
-
-### ✅ D. Add SQS Trigger to Lambda
+###  D. Add SQS Trigger to Lambda
 
 1. In the Lambda dashboard → go to **“Configuration” > Triggers**
 2. Click **“Add Trigger”**
@@ -195,65 +180,11 @@ Lambda needs permissions to:
 }
 ```
 
-✅ Done — Lambda can now poll SQS and send emails via SES.
-
----
+ Done — Lambda can now poll SQS and send emails via SES.
 
 ## 🧑‍💻 STEP 3: LAMBDA FUNCTION CODE
 
-Paste this code into your Lambda in the AWS Console.
-
-### `lambda_function.py`
-
-```python
-import json
-import boto3
-
-ses = boto3.client('ses', region_name='us-east-1')  # Replace if needed
-
-SENDER_EMAIL = "your-email@example.com"  # Must be SES-verified
-
-def lambda_handler(event, context):
-    for record in event['Records']:
-        message = json.loads(record['body'])
-
-        email = message['email']
-        trans_type = message['type']
-        amount = message['amount']
-
-        subject = "Transaction Alert"
-        body = format_email(trans_type, amount)
-
-        try:
-            send_email(email, subject, body)
-            print(f"✅ Email sent to {email}")
-        except Exception as e:
-            print(f"❌ Error sending email: {e}")
-
-    return {'statusCode': 200}
-
-
-def format_email(trans_type, amount):
-    if trans_type == 'credit':
-        action = "credited"
-    elif trans_type == 'debit':
-        action = "debited"
-    else:
-        action = "processed"
-
-    return f"Your account has been {action} with ${amount:.2f}."
-
-
-def send_email(to_email, subject, body):
-    ses.send_email(
-        Source=SENDER_EMAIL,
-        Destination={'ToAddresses': [to_email]},
-        Message={
-            'Subject': {'Data': subject},
-            'Body': {'Text': {'Data': body}}
-        }
-    )
-```
+Paste this code refer to "lamda_to_ses.py" in repo into your Lambda in the AWS Console.
 
 🧠 This function:
 
@@ -265,75 +196,19 @@ def send_email(to_email, subject, body):
 
 ## 🧑‍💻 STEP 4: CLIENT SCRIPT TO SEND MESSAGE TO SQS
 
-Install `boto3`:
-
-```bash
-pip install boto3
-```
-
-Then create this Python script:
-
-### `send_transaction.py`
-
-```python
-import boto3
-import json
-
-sqs = boto3.client('sqs', region_name='us-east-1')  # Your region
-
-QUEUE_URL = 'https://sqs.us-east-1.amazonaws.com/your-account-id/transaction-events-queue'
-
-def send_transaction_event(user_email, transaction_type, amount):
-    message = {
-        "email": user_email,
-        "type": transaction_type,  # 'credit' or 'debit'
-        "amount": amount
-    }
-
-    response = sqs.send_message(
-        QueueUrl=QUEUE_URL,
-        MessageBody=json.dumps(message)
-    )
-
-    print("✅ Message sent to SQS. Message ID:", response['MessageId'])
-
-# Example usage
-if __name__ == "__main__":
-    send_transaction_event(
-        user_email="customer@example.com",  # Can be same as your SES-verified email for now
-        transaction_type="credit",
-        amount=150.0
-    )
-```
-
----
-
-## ▶️ STEP 5: RUN & TEST
-
-### ✅ Run the client script
-
-```bash
-python send_transaction.py
+Run this code/script on VScode or any terminal "core_app_sqs.py" see files in repo 
+This will send a json file with payload to the queue for lamda to consume
 ```
 
 You should see:
 
 ```
-✅ Message sent to SQS. Message ID: abc123...
+Message sent to SQS. Message ID: abc123...
+```
+Email sent to customer@example.com
 ```
 
-### ✅ Check Lambda Logs
-
-Go to:
-
-* AWS Console → Lambda → Monitor → View Logs in CloudWatch
-* You should see logs like:
-
-```
-✅ Email sent to customer@example.com
-```
-
-### ✅ Check Email
+### Check Email
 
 Check your inbox (use your SES-verified recipient email). The email should say:
 
