@@ -1,1 +1,58 @@
 AWS Scalable -Transactional-EmailAlert System
+
+# 💬 AWS Transactional Email Alert System
+
+This project demonstrates a **serverless architecture** that decouples email notification from a core banking application using **Amazon SQS, Lambda, and SES**.
+
+---
+
+## 🚀 Project Overview
+
+A core banking system triggers transactional email alerts (e.g. deposits, withdrawals). Instead of directly using SMTP(or any email gatewa y) (which risks failure when local logs/storage overflow), we offload email processing using AWS-native services.
+
+### 📦 Tech Stack
+
+* **Amazon SQS** – Queue for email payloads
+* **AWS Lambda** – Processes messages from SQS and sends emails
+* **Amazon SES** – Sends high-deliverability transactional emails
+* **CloudWatch** – Logs and observability
+
+---
+
+## ✅ Architecture Flow
+
+```
+[Core App] → [SQS] → [Lambda] → [SES] → [Customer Email]
+```
+
+---
+
+## 🔨 Setup Steps
+
+### 1. **Create SQS Queue**
+
+* Standard queue named `give it a situable name`
+* No FIFO needed unless strict ordering is required
+
+### 2. **Create Lambda Function**
+
+* Triggered by the SQS queue
+* Reads message, extracts recipient, subject, and body
+* Uses Boto3 to send email via SES
+
+### 3. **Configure SES**
+
+> ⚠️ SES requires domain/email **verification** to prevent spam and spoofing.
+
+* Use a **personal email** (e.g. Gmail, Yahoo) or a **registered domain**
+* In **sandbox mode**, SES can only send to verified recipients
+* For production access, submit a request to AWS
+
+### 4. **Send Message via Core App**
+
+A Python script (`core_app_sqs_sender.py`)- (see repo for details of python script) sends a message like:
+
+```
+
+
+
