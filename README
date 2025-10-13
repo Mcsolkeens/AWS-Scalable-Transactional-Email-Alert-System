@@ -21,11 +21,7 @@ A core banking system triggers transactional email alerts (e.g. deposits, withdr
 
 ## ✅ Architecture Flow
 
-```
 [Core App] → [SQS] → [Lambda] → [SES] → [Customer Email]
-```
-
----
 
 ## 🔨 Setup Steps
 
