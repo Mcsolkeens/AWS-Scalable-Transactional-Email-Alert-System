@@ -1,1 +1,226 @@
-AWS SCALABLE EMAIL DELIVERY
+AWS SCALABLE TRANSACTIONAL
+
+<header>
+
+<! AWS
+
+## AWS Scalable Transactional Email Alert System</b></h1>
+
+---
+</header>
+<!
+## 💬 **Overview**
+
+This project demonstrates a **modern, serverless, and scalable email notification system** that decouples email alerts from a **core banking application** using **Amazon SQS, Lambda, and SES**.
+
+When customers perform transactions (e.g., deposits or withdrawals), the system ensures reliable, high-deliverability transactional emails — without being affected by VM failures, local log issues, or network latency.
+
+---
+
+## ⚙️ **Architecture Overview**
+
+```
+
+[Core Banking App] → [Amazon SQS] → [AWS Lambda] → [Amazon SES] → [Customer Email]
+
+```
+
+---
+
+## Tech Stack**
+
+| Component | Purpose |
+|------------|----------|
+| **Amazon SQS** | Acts as a message queue for transactional events |
+| **AWS Lambda** | Processes messages and triggers email sending |
+| **Amazon SES** | Sends transactional emails reliably |
+| **Amazon CloudWatch** | Handles logging and monitoring |
+
+---
+
+## 🧩 **Project Goal**
+
+To build a **fault-tolerant and scalable** email alert system for a banking application that ensures email delivery even under high traffic or infrastructure failures.
+
+---
+
+## 🧰 **Tools & Environment**
+
+- **AWS Services:** SQS, Lambda, SES  
+- **Language:** Python 3.8+  
+- **Libraries:** `boto3` (AWS SDK for Python)  
+- **Environment:** AWS Console + Local (VS Code or CLI)
+
+---
+
+## 🗂️ **Project Structure**
+
+```
+
+emailalert/
+│
+├── core_app_sqs.py       # Sends transaction messages to SQS
+├── lambda_to_ses.py      # Lambda handler that sends emails using SES
+
+````
+
+---
+
+##  **Step-by-Step Implementation**
+
+### **Step 1: Create SQS Queue**
+
+1. Navigate to **AWS Console → SQS**
+2. Click **Create Queue**
+3. Select **Standard Queue**
+4. Name it: `transaction-events-queue`
+5. Leave defaults and **Create Queue**
+
+> Use a **FIFO queue** only if you need strict message ordering.
+
+---
+
+### **Step 2: Verify SES Email Identity**
+
+1. Go to **AWS Console → SES → Verified Identities**
+2. Click **Create Identity**
+3. Choose **Email Address**
+4. Enter your email (e.g., `your-email@example.com`)
+5. Check your inbox and **verify** via the confirmation link.
+This projet uses a sandbox. If your organisation have a regstered domain that should be expolre because you dont have to verified each email once the domain is verified.
+> In **sandbox mode**, SES can only send emails to verified recipients.  
+> To move to production, submit a request to AWS.
+
+---
+
+### **Step 3: Create Lambda Function**
+
+1. Navigate to **AWS Console → Lambda**
+2. Click **Create Function**
+3. Name it: `transaction-email-processor`
+4. Runtime: **Python 3.8+**
+5. Click **Create Function**
+6. Under “Code”, paste the content from your `lambda_to_ses.py`
+7. Click **Deploy**
+
+---
+
+### **Step 4: Add SQS Trigger to Lambda**
+
+1. In your Lambda console → **Configuration → Triggers**
+2. Click **Add Trigger**
+3. Select **SQS**
+4. Choose your `transaction-events-queue`
+5. Click **Add**
+
+> This automatically invokes the Lambda whenever a new message is sent to SQS.
+
+---
+
+### **Step 5: Configure Lambda IAM Role**
+
+Your Lambda function needs permission to:
+- Read messages from SQS  
+- Send emails through SES  
+
+Add this **inline IAM policy** to the Lambda’s role:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "sqs:ReceiveMessage",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": "ses:SendEmail",
+      "Resource": "*"
+    }
+  ]
+}
+````
+
+✅ **Now your Lambda can poll SQS and send emails through SES.**
+
+---
+
+## **Step 6: Lambda Function Code**
+
+Place this file in AWS Lambda under **Code → Editor**:
+
+`lambda_to_ses.py`
+
+This function:
+
+* Parses the SQS message
+* Formats the email
+* Sends the email via **SES**
+
+---
+
+##  **Step 7: Send Transaction Event from Core App**
+
+Use the Python script below (`core_app_sqs.py`) locally to send test messages:
+
+```bash
+python3 core_app_sqs.py
+```
+
+You should see output like:
+Message sent to SQS. Message ID: abc123...
+
+Click on the **main** branch drop-down.
+![main-branch-dropdown](/images/core prototype.png)
+
+Email sent to customer@example.com
+```
+
+---
+
+## **Email Example**
+
+**Subject:** Transaction Alert
+**Body:**
+
+```
+Your account has been credited with $150.00.
+```
+
+✅ Check your inbox (use a verified SES email).
+
+---
+
+## 📊 **Key Learnings**
+
+You’ll learn how to:
+
+* Set up **SQS**, **Lambda**, and **SES**
+* Write Python scripts to send and process events
+* Handle AWS IAM permissions
+* Monitor event logs using CloudWatch
+* Send high-deliverability transactional emails
+
+---
+
+## Why This Matters 
+
+By leveraging **AWS serverless architecture**, this approach eliminates:
+
+* SMTP failures
+* Local log or storage bottlenecks
+* Manual scaling issues
+
+It ensures **reliability, scalability, and cost-efficiency** for business-critical notifications.
+
+---
+
+<h3 align="center">🌩️ Built with AWS Native Services — Resilient, Serverless, and Scalable</h3>
+```
+
