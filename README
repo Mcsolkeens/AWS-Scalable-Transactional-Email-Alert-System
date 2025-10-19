@@ -1,14 +1,11 @@
 AWS SCALABLE TRANSACTIONAL
 
-<header>
 
-<! AWS
-
-## AWS Scalable Transactional Email Alert System</b></h1>
+## AWS Scalable Transactional Email Alert System
 
 ---
-</header>
-<!
+
+
 ## 💬 **Overview**
 
 This project demonstrates a **modern, serverless, and scalable email notification system** that decouples email alerts from a **core banking application** using **Amazon SQS, Lambda, and SES**.
