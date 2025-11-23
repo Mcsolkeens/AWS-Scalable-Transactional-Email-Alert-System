@@ -194,15 +194,7 @@ Your account has been credited with $150.00.
 
 ---
 
-## 📊 **Key Learnings**
 
-You’ll learn how to:
-
-* Set up **SQS**, **Lambda**, and **SES**
-* Write Python scripts to send and process events
-* Handle AWS IAM permissions
-* Monitor event logs using CloudWatch
-* Send high-deliverability transactional emails
 
 ---
 
